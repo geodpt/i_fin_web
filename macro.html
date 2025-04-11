@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Macro Indicators</title>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <style>
+    body {
+      background-color: #0e1116;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .nav {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .nav a {
+      color: #ccc;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+    .nav a:hover {
+      color: white;
+      text-decoration: underline;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 20px;
+      font-weight: normal;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 30px;
+    }
+    .chart-box {
+      background-color: #1e1e1e;
+      padding: 5px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="currencies.html">Currency Rates</a> |
+    <a href="macro.html">Macro Indicators</a>
+  </div>
+  <h2>Macro Indicators</h2>
+  <div class="grid">
+    <div class="chart-box"><div id="gold"></div></div>
+    <div class="chart-box"><div id="silver"></div></div>
+    <div class="chart-box"><div id="us01y"></div></div>
+    <div class="chart-box"><div id="us10y"></div></div>
+    <div class="chart-box"><div id="cpi"></div></div>
+    <div class="chart-box"><div id="spx"></div></div>
+  </div>
+  <script>
+    const macroCharts = [
+      { id: "gold", symbol: "TVC:GOLD" },
+      { id: "silver", symbol: "TVC:SILVER" },
+      { id: "us01y", symbol: "TVC:US01Y" },
+      { id: "us10y", symbol: "TVC:US10Y" },
+      { id: "cpi", symbol: "ECONOMICS:CPI_US" },
+      { id: "spx", symbol: "SP:SPX" }
+    ];
+
+    macroCharts.forEach(({ id, symbol }) => {
+      new TradingView.widget({
+        container_id: id,
+        width: "100%",
+        height: 320,
+        symbol: symbol,
+        interval: "D",
+        timezone: "Etc/UTC",
+        theme: "dark",
+        style: "3",
+        locale: "en",
+        withdateranges: false,
+        range: "12M",
+        hide_top_toolbar: true,
+        hide_legend: false,
+        hide_side_toolbar: true,
+        allow_symbol_change: false,
+        backgroundColor: "#1e1e1e",
+        studies: [],
+        overrides: {
+          "volume.volume.visible": false
+        },
+        save_image: false
+      });
+    });
+  </script>
+</body>
+</html>
