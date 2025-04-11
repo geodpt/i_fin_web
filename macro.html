@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Macro Indicators</title>
+  <title>Macro Dashboard</title>
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       background-color: #0e1116;
@@ -11,35 +12,6 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 20px;
-    }
-    .nav {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    .nav a {
-      color: #ccc;
-      margin: 0 10px;
-      text-decoration: none;
-    }
-    .nav a:hover {
-      color: white;
-      text-decoration: underline;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 10px;
-      font-size: 20px;
-      font-weight: normal;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
-      gap: 30px;
-    }
-    .chart-box {
-      background-color: #1e1e1e;
-      padding: 5px;
-      border-radius: 5px;
     }
     .page-switch {
       position: fixed;
@@ -60,31 +32,43 @@
     .page-switch a:hover {
       color: white;
     }
-
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 20px;
+      font-weight: normal;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 30px;
+    }
+    .chart-box {
+      background-color: #1e1e1e;
+      padding: 5px;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
-  
-  <h2>Macro Indicators</h2>
-  <div class="grid">
-    <div class="chart-box"><div id="gold"></div></div>
-    <div class="chart-box"><div id="silver"></div></div>
-    <div class="chart-box"><div id="us01y"></div></div>
-    <div class="chart-box"><div id="us10y"></div></div>
-    <div class="chart-box"><div id="cpi"></div></div>
-    <div class="chart-box"><div id="spx"></div></div>
-  </div>
   <div class="page-switch">
     <a href="currencies.html">💱 Currencies</a>
     <a href="macro.html">📊 Macro</a>
   </div>
+
+  <h2>Macro Indicators</h2>
+
+  <div class="grid">
+    <div class="chart-box"><div id="gold"></div></div>
+    <div class="chart-box"><div id="silver"></div></div>
+    <div class="chart-box"><div id="spx"></div></div>
+    <div class="chart-box"><canvas id="us10yChart"></canvas></div>
+  </div>
+
   <script>
     const macroCharts = [
-      { id: "gold", symbol: "TVC:GOLD" },
-      { id: "silver", symbol: "TVC:SILVER" },
-      { id: "us01y", symbol: "TVC:US01Y" },
-      { id: "us10y", symbol: "TVC:US10Y" },
-      { id: "cpi", symbol: "ECONOMICS:CPI_US" },
+      { id: "gold", symbol: "COMEX:GC1!" },
+      { id: "silver", symbol: "COMEX:SI1!" },
       { id: "spx", symbol: "SP:SPX" }
     ];
 
@@ -113,6 +97,42 @@
         save_image: false
       });
     });
+  </script>
+
+  <script>
+    (async () => {
+      const res = await fetch("https://api.stlouisfed.org/fred/series/observations?series_id=GS10&api_key=25651c703c76d387f56906d055ce76ef&file_type=json");
+      const data = await res.json();
+      const observations = data.observations.filter(o => !isNaN(parseFloat(o.value)));
+      const labels = observations.map(o => o.date).slice(-365);
+      const values = observations.map(o => parseFloat(o.value)).slice(-365);
+
+      new Chart(document.getElementById("us10yChart").getContext("2d"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "US 10Y Treasury Yield (%)",
+            data: values,
+            borderColor: "lime",
+            borderWidth: 1.5,
+            pointRadius: 0,
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { labels: { color: "white" }},
+            title: { display: true, text: "US 10Y Yield (FRED)", color: "white" }
+          },
+          scales: {
+            x: { ticks: { color: "white" }, grid: { color: "#333" } },
+            y: { ticks: { color: "white" }, grid: { color: "#333" } }
+          }
+        }
+      });
+    })();
   </script>
 </body>
 </html>
