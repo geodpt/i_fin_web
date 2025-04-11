@@ -63,6 +63,9 @@
       padding: 5px;
       border-radius: 5px;
     }
+    canvas {
+      background-color: #0e1116;
+    }
   </style>
 </head>
 <body>
@@ -80,7 +83,14 @@
     <button onclick="updateAllCharts('240M')">20Y</button>
   </div>
 
-  <div class="grid" id="chartGrid"></div>
+  <div class="grid" id="chartGrid">
+    <div class="chart-box"><div id="chart_gold"></div></div>
+    <div class="chart-box"><div id="chart_silver"></div></div>
+    <div class="chart-box"><div id="chart_spx"></div></div>
+    <div class="chart-box"><canvas id="chart_10y"></canvas></div>
+    <div class="chart-box"><canvas id="chart_1y"></canvas></div>
+    <div class="chart-box"><canvas id="chart_cpi"></canvas></div>
+  </div>
 
   <script>
     const macroCharts = [
@@ -89,19 +99,17 @@
       { id: "chart_spx", symbol: "OANDA:SPX500USD" }
     ];
 
-    const containers = {};
-    const widgets = {};
+    const containers = {}, widgets = {};
+    const fredSeries = {
+      "chart_10y": { id: "GS10", label: "10Y Treasury Yield (%)" },
+      "chart_1y": { id: "GS1", label: "1Y Treasury Yield (%)" },
+      "chart_cpi": { id: "CPIAUCSL", label: "US CPI (Index)" }
+    };
+    const FRED_API_KEY = "25651c703c76d387f56906d055ce76ef";
 
     function renderGrid() {
-      const grid = document.getElementById("chartGrid");
       macroCharts.forEach(({ id }) => {
-        const box = document.createElement("div");
-        box.className = "chart-box";
-        const div = document.createElement("div");
-        div.id = id;
-        box.appendChild(div);
-        grid.appendChild(box);
-        containers[id] = div;
+        containers[id] = document.getElementById(id);
       });
     }
 
@@ -124,18 +132,14 @@
         allow_symbol_change: false,
         backgroundColor: "#1e1e1e",
         studies: [],
-        overrides: {
-          "volume.volume.visible": false
-        },
+        overrides: { "volume.volume.visible": false },
         save_image: false
       });
     }
 
     function loadAllCharts(range = "12M") {
       macroCharts.forEach(({ id, symbol }) => {
-        if (widgets[id]) {
-          containers[id].innerHTML = "";
-        }
+        if (widgets[id]) containers[id].innerHTML = "";
         widgets[id] = createWidget(id, symbol, range);
       });
     }
@@ -146,8 +150,46 @@
       loadAllCharts(range);
     }
 
+    async function loadFREDChart(chartId, seriesId, label) {
+      const res = await fetch(`https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${FRED_API_KEY}&file_type=json`);
+      const data = await res.json();
+      const obs = data.observations.filter(o => !isNaN(parseFloat(o.value)));
+      const labels = obs.map(o => o.date).slice(-365);
+      const values = obs.map(o => parseFloat(o.value)).slice(-365);
+
+      new Chart(document.getElementById(chartId).getContext("2d"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label,
+            data: values,
+            borderColor: "orange",
+            borderWidth: 1.5,
+            pointRadius: 0,
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { labels: { color: "white" }},
+            title: { display: true, text: label, color: "white" }
+          },
+          scales: {
+            x: { ticks: { color: "white" }, grid: { color: "#333" } },
+            y: { ticks: { color: "white" }, grid: { color: "#333" } }
+          }
+        }
+      });
+    }
+
     renderGrid();
     loadAllCharts("12M");
+
+    for (const [chartId, cfg] of Object.entries(fredSeries)) {
+      loadFREDChart(chartId, cfg.id, cfg.label);
+    }
   </script>
 </body>
 </html>
