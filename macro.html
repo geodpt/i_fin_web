@@ -66,11 +66,12 @@
   </div>
 
   <script>
-    const macroCharts = [
-      { id: "gold", symbol: "COMEX:GC1!" },
-      { id: "silver", symbol: "COMEX:SI1!" },
-      { id: "spx", symbol: "SP:SPX" }
-    ];
+  const macroCharts = [
+    { id: "gold", symbol: "TVC:GOLD" },
+    { id: "silver", symbol: "TVC:SILVER" },
+    { id: "spx", symbol: "OANDA:SPX500USD" }
+  ];
+
 
     macroCharts.forEach(({ id, symbol }) => {
       new TradingView.widget({
