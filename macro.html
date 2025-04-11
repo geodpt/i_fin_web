@@ -38,6 +38,21 @@
       font-size: 20px;
       font-weight: normal;
     }
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .controls button {
+      background-color: #1e1e1e;
+      color: white;
+      border: 1px solid #444;
+      padding: 6px 12px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .controls button.active {
+      background-color: #444;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
@@ -58,23 +73,40 @@
 
   <h2>Macro Indicators</h2>
 
-  <div class="grid">
-    <div class="chart-box"><div id="gold"></div></div>
-    <div class="chart-box"><div id="silver"></div></div>
-    <div class="chart-box"><div id="spx"></div></div>
-    <div class="chart-box"><canvas id="us10yChart"></canvas></div>
+  <div class="controls">
+    <button onclick="updateAllCharts('1M')">1M</button>
+    <button onclick="updateAllCharts('12M')" class="active">1Y</button>
+    <button onclick="updateAllCharts('60M')">5Y</button>
+    <button onclick="updateAllCharts('240M')">20Y</button>
   </div>
 
+  <div class="grid" id="chartGrid"></div>
+
   <script>
-  const macroCharts = [
-    { id: "gold", symbol: "TVC:GOLD" },
-    { id: "silver", symbol: "TVC:SILVER" },
-    { id: "spx", symbol: "OANDA:SPX500USD" }
-  ];
+    const macroCharts = [
+      { id: "chart_gold", symbol: "TVC:GOLD" },
+      { id: "chart_silver", symbol: "TVC:SILVER" },
+      { id: "chart_spx", symbol: "OANDA:SPX500USD" }
+    ];
 
+    const containers = {};
+    const widgets = {};
 
-    macroCharts.forEach(({ id, symbol }) => {
-      new TradingView.widget({
+    function renderGrid() {
+      const grid = document.getElementById("chartGrid");
+      macroCharts.forEach(({ id }) => {
+        const box = document.createElement("div");
+        box.className = "chart-box";
+        const div = document.createElement("div");
+        div.id = id;
+        box.appendChild(div);
+        grid.appendChild(box);
+        containers[id] = div;
+      });
+    }
+
+    function createWidget(id, symbol, range) {
+      return new TradingView.widget({
         container_id: id,
         width: "100%",
         height: 320,
@@ -85,7 +117,7 @@
         style: "3",
         locale: "en",
         withdateranges: false,
-        range: "12M",
+        range: range,
         hide_top_toolbar: true,
         hide_legend: false,
         hide_side_toolbar: true,
@@ -97,43 +129,25 @@
         },
         save_image: false
       });
-    });
-  </script>
+    }
 
-  <script>
-    (async () => {
-      const res = await fetch("https://api.stlouisfed.org/fred/series/observations?series_id=GS10&api_key=25651c703c76d387f56906d055ce76ef&file_type=json");
-      const data = await res.json();
-      const observations = data.observations.filter(o => !isNaN(parseFloat(o.value)));
-      const labels = observations.map(o => o.date).slice(-365);
-      const values = observations.map(o => parseFloat(o.value)).slice(-365);
-
-      new Chart(document.getElementById("us10yChart").getContext("2d"), {
-        type: "line",
-        data: {
-          labels,
-          datasets: [{
-            label: "US 10Y Treasury Yield (%)",
-            data: values,
-            borderColor: "lime",
-            borderWidth: 1.5,
-            pointRadius: 0,
-            tension: 0.1
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { labels: { color: "white" }},
-            title: { display: true, text: "US 10Y Yield (FRED)", color: "white" }
-          },
-          scales: {
-            x: { ticks: { color: "white" }, grid: { color: "#333" } },
-            y: { ticks: { color: "white" }, grid: { color: "#333" } }
-          }
+    function loadAllCharts(range = "12M") {
+      macroCharts.forEach(({ id, symbol }) => {
+        if (widgets[id]) {
+          containers[id].innerHTML = "";
         }
+        widgets[id] = createWidget(id, symbol, range);
       });
-    })();
+    }
+
+    function updateAllCharts(range) {
+      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`.controls button[onclick="updateAllCharts('${range}')"]`).classList.add('active');
+      loadAllCharts(range);
+    }
+
+    renderGrid();
+    loadAllCharts("12M");
   </script>
 </body>
 </html>
