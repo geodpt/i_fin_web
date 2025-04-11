@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Macro Dashboard</title>
-  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Macro Dashboard (Widget Edition)</title>
   <style>
     body {
       background-color: #0e1116;
@@ -38,21 +36,6 @@
       font-size: 20px;
       font-weight: normal;
     }
-    .controls {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .controls button {
-      background-color: #1e1e1e;
-      color: white;
-      border: 1px solid #444;
-      padding: 6px 12px;
-      margin: 5px;
-      cursor: pointer;
-    }
-    .controls button.active {
-      background-color: #444;
-    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
@@ -63,8 +46,9 @@
       padding: 5px;
       border-radius: 5px;
     }
-    canvas {
-      background-color: #0e1116;
+    iframe {
+      border: none;
+      width: 100%;
       height: 320px;
     }
   </style>
@@ -75,72 +59,33 @@
     <a href="macro.html">📊 Macro</a>
   </div>
 
-  <h2>Macro Indicators</h2>
+  <h2>Macro Indicators (Live Widgets)</h2>
 
-  <div class="controls">
-    <button onclick="updateAllCharts('1M')">1M</button>
-    <button onclick="updateAllCharts('12M')" class="active">1Y</button>
-    <button onclick="updateAllCharts('60M')">5Y</button>
-    <button onclick="updateAllCharts('240M')">20Y</button>
+  <div class="grid">
+    <div class="chart-box">
+      <!-- TradingView: Gold -->
+      <iframe src="https://s.tradingview.com/embed-widget/symbol-overview/?locale=en#%7B%22symbols%22%3A%5B%5B%22TVC%3AGOLD%22%5D%5D%2C%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Afalse%7D"></iframe>
+    </div>
+    <div class="chart-box">
+      <!-- TradingView: Silver -->
+      <iframe src="https://s.tradingview.com/embed-widget/symbol-overview/?locale=en#%7B%22symbols%22%3A%5B%5B%22TVC%3ASILVER%22%5D%5D%2C%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Afalse%7D"></iframe>
+    </div>
+    <div class="chart-box">
+      <!-- TradingView: S&P500 -->
+      <iframe src="https://s.tradingview.com/embed-widget/symbol-overview/?locale=en#%7B%22symbols%22%3A%5B%5B%22OANDA%3ASPX500USD%22%5D%5D%2C%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Afalse%7D"></iframe>
+    </div>
+    <div class="chart-box">
+      <!-- TradingView: US 10Y Yield -->
+      <iframe src="https://s.tradingview.com/embed-widget/symbol-overview/?locale=en#%7B%22symbols%22%3A%5B%5B%22TVC%3AUS10Y%22%5D%5D%2C%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Afalse%7D"></iframe>
+    </div>
+    <div class="chart-box">
+      <!-- TradingView: US 1Y Yield -->
+      <iframe src="https://s.tradingview.com/embed-widget/symbol-overview/?locale=en#%7B%22symbols%22%3A%5B%5B%22TVC%3AUS01Y%22%5D%5D%2C%22colorTheme%22%3A%22dark%22%2C%22isTransparent%22%3Afalse%7D"></iframe>
+    </div>
+    <div class="chart-box">
+      <!-- TradingEconomics: US CPI -->
+      <iframe src="https://tradingeconomics.com/embed/country/united-states/indicator/consumer-price-index-cpi" style="height:320px;"></iframe>
+    </div>
   </div>
-
-  <div class="grid" id="chartGrid">
-    <div class="chart-box"><div id="chart_gold"></div></div>
-    <div class="chart-box"><div id="chart_silver"></div></div>
-    <div class="chart-box"><div id="chart_spx"></div></div>
-    <div class="chart-box"><canvas id="chart_10y"></canvas></div>
-    <div class="chart-box"><canvas id="chart_1y"></canvas></div>
-    <div class="chart-box"><canvas id="chart_cpi"></canvas></div>
-  </div>
-
-<script>
-async function loadFREDChart(chartId, seriesId, label) {
-  try {
-    const res = await fetch(`https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=25651c703c76d387f56906d055ce76ef&file_type=json`);
-    const data = await res.json();
-    const obs = data.observations.filter(o => !isNaN(parseFloat(o.value)));
-    const labels = obs.map(o => o.date).slice(-365);
-    const values = obs.map(o => parseFloat(o.value)).slice(-365);
-
-    if (!labels.length || !values.length) {
-      console.error(`No data loaded for ${chartId}`, data);
-      return;
-    }
-
-    const ctx = document.getElementById(chartId).getContext("2d");
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels,
-        datasets: [{ label, data: values, borderColor: "orange", borderWidth: 1.5, pointRadius: 0, tension: 0.1 }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { labels: { color: "white" }},
-          title: { display: true, text: label, color: "white" }
-        },
-        scales: {
-          x: { ticks: { color: "white" }, grid: { color: "#333" } },
-          y: { ticks: { color: "white" }, grid: { color: "#333" } }
-        }
-      }
-    });
-  } catch (e) {
-    console.error(`Error loading ${chartId}`, e);
-  }
-}
-
-["chart_10y", "chart_1y", "chart_cpi"].forEach((chartId) => {
-  const series = {
-    chart_10y: { id: "GS10", label: "10Y Treasury Yield (%)" },
-    chart_1y: { id: "GS1", label: "1Y Treasury Yield (%)" },
-    chart_cpi: { id: "CPIAUCSL", label: "US CPI (Index)" }
-  };
-  loadFREDChart(chartId, series[chartId].id, series[chartId].label);
-});
-</script>
-
 </body>
 </html>
