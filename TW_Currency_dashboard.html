@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FX Chart Grid</title>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <style>
+    body {
+      background-color: #0e1116;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 20px;
+      font-weight: normal;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .controls button {
+      background-color: #1e1e1e;
+      color: white;
+      border: 1px solid #444;
+      padding: 6px 12px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    .controls button.active {
+      background-color: #444;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 30px;
+    }
+    .chart-box {
+      background-color: #1e1e1e;
+      padding: 5px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>FX Chart Grid – Line Charts</h2>
+  <div class="controls">
+    <button onclick="updateAllCharts('1M')">1M</button>
+    <button onclick="updateAllCharts('12M')" class="active">1Y</button>
+    <button onclick="updateAllCharts('60M')">5Y</button>
+    <button onclick="updateAllCharts('240M')">20Y</button>
+  </div>
+  <div class="grid" id="chartGrid"></div>
+
+  <script>
+
+    const chartList = [
+    { id: "chart_usdeur", symbol: "FX_IDC:USDEUR" },
+    { id: "chart_usdchf", symbol: "FX_IDC:USDCHF" },
+    { id: "chart_usdjpy", symbol: "FX_IDC:USDJPY" },
+    { id: "chart_usdcny", symbol: "FX_IDC:USDCNY" },
+    { id: "chart_usdpln", symbol: "FX_IDC:USDPLN" },
+    { id: "chart_usdnok", symbol: "FX_IDC:USDNOK" },
+    { id: "chart_usdrub", symbol: "FX_IDC:USDRUB" },
+    { id: "chart_usdamd", symbol: "FX_IDC:USDAMD" },
+    { id: "chart_usdars", symbol: "FX_IDC:USDARS" }
+  ];
+    const containers = {};
+    const widgets = {};
+
+    function renderGrid() {
+      const grid = document.getElementById("chartGrid");
+      chartList.forEach(({ id }) => {
+        const box = document.createElement("div");
+        box.className = "chart-box";
+        const div = document.createElement("div");
+        div.id = id;
+        box.appendChild(div);
+        grid.appendChild(box);
+        containers[id] = div;
+      });
+    }
+
+    function createWidget(id, symbol, range) {
+  return new TradingView.widget({
+    container_id: id,
+    width: "100%",
+    height: 320,
+    symbol: symbol,
+    interval: "D",
+    timezone: "Etc/UTC",
+    theme: "dark",
+    style: "3", // line chart
+    locale: "en",
+    withdateranges: false,
+    range: range,
+    hide_top_toolbar: true,
+    hide_legend: false,
+    hide_side_toolbar: true,
+    allow_symbol_change: false,
+    backgroundColor: "#1e1e1e",
+    studies: [], // explicitly remove volume
+    overrides: {
+      "volume.volume.visible": false
+      },
+    save_image: false
+  });
+}
+
+    function loadAllCharts(range = "12M") {
+      chartList.forEach(({ id, symbol }) => {
+        if (widgets[id]) {
+          containers[id].innerHTML = "";
+        }
+        widgets[id] = createWidget(id, symbol, range);
+      });
+    }
+
+    function updateAllCharts(range) {
+      document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+      document.querySelector(`.controls button[onclick="updateAllCharts('${range}')"]`).classList.add('active');
+      loadAllCharts(range);
+    }
+
+    renderGrid();
+    loadAllCharts("12M");
+  </script>
+</body>
+</html>
