@@ -65,6 +65,7 @@
     }
     canvas {
       background-color: #0e1116;
+      height: 320px;
     }
   </style>
 </head>
@@ -156,8 +157,13 @@
       const obs = data.observations.filter(o => !isNaN(parseFloat(o.value)));
       const labels = obs.map(o => o.date).slice(-365);
       const values = obs.map(o => parseFloat(o.value)).slice(-365);
+      console.log("FRED", chartId, labels.length, values.length);
 
-      new Chart(document.getElementById(chartId).getContext("2d"), {
+      const canvas = document.getElementById(chartId);
+      canvas.width = canvas.clientWidth;
+      canvas.height = 320;
+
+      new Chart(canvas.getContext("2d"), {
         type: "line",
         data: {
           labels,
